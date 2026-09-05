@@ -20,6 +20,8 @@ next-env.d.ts
 # --- Local data & artifacts (never commit user audio or DBs) ---
 data/uploads/*
 !data/uploads/.gitkeep
+data/voice/*
+!data/voice/.gitkeep
 data/*.db
 data/*.db-journal
 data/*.db-wal

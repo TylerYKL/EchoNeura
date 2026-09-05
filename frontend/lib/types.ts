@@ -203,3 +203,41 @@ export const LANGUAGES: { code: string; label: string }[] = [
   { code: "tr", label: "Turkish" },
   { code: "pl", label: "Polish" },
 ];
+
+// ---------------------------------------------------------------------------
+// Live voice (M1.5) — mirrors backend/app/services/voice.py utterance_to_dict
+// ---------------------------------------------------------------------------
+
+export interface VoiceAssistantPayload {
+  provider: string | null;
+  reply: string | null;
+  action: string | null;
+  data: Record<string, unknown>;
+}
+
+export interface VoiceUtterance {
+  id: string;
+  created_at: string | null;
+  source: string;
+  audio_seconds: number;
+  language: string;
+  detected_language: string | null;
+  asr_provider: string | null;
+  transcript: string;
+  confidence: number | null;
+  assistant: VoiceAssistantPayload;
+  processing_ms: number | null;
+}
+
+export interface VoiceHistory {
+  total: number;
+  items: VoiceUtterance[];
+}
+
+export type VoiceWsMessage =
+  | { type: "ready"; protocol: number; fmt: string; sample_rate: number; asr: string; assistant: string; max_seconds: number; min_seconds: number }
+  | { type: "result"; utterance: VoiceUtterance }
+  | { type: "discarded"; reason: string; seconds: number | null }
+  | { type: "cancelled"; discarded_seconds?: number | null }
+  | { type: "pong" }
+  | { type: "error"; message: string; fatal?: boolean };

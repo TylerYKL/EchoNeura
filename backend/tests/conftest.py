@@ -20,6 +20,7 @@ _TMP = Path(tempfile.mkdtemp(prefix="echoneura-tests-"))
 os.environ.setdefault("ECHONEURA_ENVIRONMENT", "development")
 os.environ["ECHONEURA_DATABASE_URL"] = f"sqlite:///{_TMP / 'test.db'}"
 os.environ["ECHONEURA_UPLOAD_DIR"] = str(_TMP / "uploads")
+os.environ["ECHONEURA_VOICE_DIR"] = str(_TMP / "voice")
 os.environ["ECHONEURA_ASR_PROVIDER"] = "mock"
 os.environ["ECHONEURA_DIARIZATION_PROVIDER"] = "none"
 os.environ["ECHONEURA_ENRICH_PROVIDER"] = "mock"

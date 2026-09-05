@@ -26,6 +26,7 @@ ASRProviderName = Literal[
 ]
 DiarizationProviderName = Literal["none", "mock", "pyannote", "assemblyai", "deepgram"]
 EnrichProviderName = Literal["mock", "openai", "anthropic"]
+AssistantProviderName = Literal["mock", "openai", "anthropic"]
 
 
 class Settings(BaseSettings):
@@ -53,7 +54,13 @@ class Settings(BaseSettings):
         default=f"sqlite:///{REPO_ROOT / 'data' / 'echoneura.db'}",
     )
     upload_dir: Path = REPO_ROOT / "data" / "uploads"
+    voice_dir: Path = REPO_ROOT / "data" / "voice"
     max_upload_mb: int = 500
+
+    # --- Live voice ingest (M1.5) ---
+    voice_sample_rate: int = 16_000  # clients must send mono s16le at this rate
+    voice_max_seconds: float = 300.0  # hard cap per utterance (memory + abuse guard)
+    voice_min_seconds: float = 0.4  # below this: treat as a misfire, discard
 
     # --- Providers ---
     # Defaults are "mock" so the whole app runs offline with zero keys.
@@ -65,6 +72,10 @@ class Settings(BaseSettings):
     asr_provider: ASRProviderName = "mock"
     diarization_provider: DiarizationProviderName = "none"
     enrich_provider: EnrichProviderName = "mock"
+    # Assistant bridge for live voice (M1.5): transcript in -> reply/action out.
+    # Only "mock" is implemented today; openai/anthropic are reserved hooks so
+    # wiring a real LLM later is a config change, not a refactor (ADR 0004).
+    assistant_provider: AssistantProviderName = "mock"
 
     # --- Provider credentials (all optional; only the active one is required) ---
     assemblyai_api_key: str | None = None
@@ -98,9 +109,9 @@ class Settings(BaseSettings):
     enable_summary: bool = False  # M2
     enable_translator: bool = False  # M6
 
-    @field_validator("upload_dir", mode="before")
+    @field_validator("upload_dir", "voice_dir", mode="before")
     @classmethod
-    def _expand_upload_dir(cls, v: object) -> object:
+    def _expand_dirs(cls, v: object) -> object:
         if isinstance(v, str):
             return Path(v).expanduser().resolve()
         return v
@@ -129,6 +140,10 @@ class Settings(BaseSettings):
             missing.append("ECHONEURA_OPENAI_API_KEY")
         if self.enrich_provider == "anthropic" and not self.anthropic_api_key:
             missing.append("ECHONEURA_ANTHROPIC_API_KEY")
+        if self.assistant_provider == "openai" and not self.openai_api_key:
+            missing.append("ECHONEURA_OPENAI_API_KEY")
+        if self.assistant_provider == "anthropic" and not self.anthropic_api_key:
+            missing.append("ECHONEURA_ANTHROPIC_API_KEY")
         return missing
 
 
@@ -136,6 +151,7 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     settings = Settings()
     settings.upload_dir.mkdir(parents=True, exist_ok=True)
+    settings.voice_dir.mkdir(parents=True, exist_ok=True)
     return settings
 
 

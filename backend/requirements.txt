@@ -19,6 +19,7 @@ imageio-ffmpeg>=0.4.9
 # --- Testing ---
 pytest>=8.2
 pytest-asyncio>=0.23
+pytest-timeout>=2.3
 
 # --- Optional, enabled by env vars only. NOT installed by default because they
 #     pull ~2GB of torch and cannot run on a CPU-only 3GB box.

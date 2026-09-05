@@ -55,6 +55,9 @@ function SiteHeader() {
         <a href="/" className="btn btn-ghost btn-sm">
           Studio
         </a>
+        <a href="/voice" className="btn btn-ghost btn-sm">
+          Live voice
+        </a>
         <a href="/api/docs" className="btn btn-ghost btn-sm" target="_blank" rel="noreferrer">
           API docs
         </a>

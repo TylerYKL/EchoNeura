@@ -103,12 +103,15 @@ backend/
 frontend/
   app/                 Next.js App Router: / and /jobs/[id]
   components/          UploadDropzone, TranscriptView, SegmentRow, SpeakerPanel,
-                       ExportPanel, JobProgress, AudioPlayer, …
+                       ExportPanel, JobProgress, AudioPlayer, VoiceClient, …
+  public/worklets/     pcm-recorder.js (AudioWorklet: Float32 → Int16 PCM)
   lib/                 api client (relative URLs), types (mirror of schemas.py),
                        hooks (polling), format helpers
-docs/adr/              0001 stack · 0002 job queue · 0003 provider abstraction
+docs/adr/              0001 stack · 0002 job queue · 0003 provider abstraction ·
+                       0004 assistant bridge
+docs/device/           echo-dot-rs03qr-jailbreak.md · voice-protocol.md
 docs/PLAN.md           milestone tracker (M0–M7) with acceptance criteria
-tools/                 make_sample_audio.py
+tools/                 make_sample_audio.py · stream_audio_to_voice.py
 data/                  SQLite DB + uploads (gitignored)
 ```
 
@@ -130,6 +133,25 @@ data/                  SQLite DB + uploads (gitignored)
   human corrections; `revision` bumps on the transcript so exports can be cached
   later.
 
+## Live voice (M1.5)
+
+The **Live voice** page (`/voice`) is hold-to-talk streaming transcription:
+your mic streams raw PCM over a WebSocket (`/api/voice/stream`), the backend
+transcribes it and passes the text to a swappable **assistant bridge** that
+returns `reply` + a structured `action` (`speak`, `navigate`, …). The same
+protocol works for any client — a rooted **Amazon Echo Dot 2nd Gen (RS03QR)**
+(unlock runbook: [`docs/device/echo-dot-rs03qr-jailbreak.md`](docs/device/echo-dot-rs03qr-jailbreak.md)),
+a Raspberry Pi satellite, or the CLI reference client:
+
+```bash
+python tools/stream_audio_to_voice.py data/samples/demo.wav --fast
+```
+
+Protocol spec: [`docs/device/voice-protocol.md`](docs/device/voice-protocol.md) ·
+design: [`docs/adr/0004-assistant-bridge.md`](docs/adr/0004-assistant-bridge.md).
+The assistant is a deterministic **mock** for now — plug in a real LLM via
+`ECHONEURA_ASSISTANT_PROVIDER` (openai/anthropic are reserved hooks).
+
 ## Security & privacy notes
 
 - Uploads are streamed to disk with a hard size cap; filenames are sanitized;
@@ -144,5 +166,5 @@ data/                  SQLite DB + uploads (gitignored)
 
 ## Roadmap
 
-See [docs/PLAN.md](docs/PLAN.md). M0 (decisions/scaffold) and M1 (core pipeline)
-are complete; M2 (summaries) is next.
+See [docs/PLAN.md](docs/PLAN.md). M0 (decisions/scaffold), M1 (core pipeline)
+and M1.5 (live voice + assistant hook) are complete; M2 (summaries) is next.

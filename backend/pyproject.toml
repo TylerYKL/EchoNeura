@@ -38,4 +38,5 @@ quote-style = "double"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+timeout = 90
 filterwarnings = ["ignore::DeprecationWarning"]

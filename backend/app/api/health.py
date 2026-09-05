@@ -20,6 +20,7 @@ from app.models import Job, JobStatus
 from app.providers.base import ProviderUnavailable
 from app.providers.registry import (
     get_asr_provider,
+    get_assistant_provider,
     get_diarization_provider,
     get_enrichment_provider,
     provider_summary,
@@ -50,6 +51,7 @@ def build_health(db: Session | None = None) -> dict[str, Any]:
     for label, factory in (
         ("asr", get_asr_provider),
         ("enrichment", get_enrichment_provider),
+        ("assistant", get_assistant_provider),
     ):
         try:
             factory().check_available()

@@ -258,3 +258,37 @@ class JobEvent(Base):
     )
 
     job: Mapped[Job] = relationship(back_populates="events")
+
+
+class VoiceUtterance(Base):
+    """One live-voice utterance (M1.5): audio in, transcript + assistant reply out.
+
+    Deliberately NOT linked to Job — live voice is conversational and low-value
+    per row, while Job is the heavy batch-pipeline entity. Utterances are kept
+    for history/debugging and can be pruned aggressively.
+    """
+
+    __tablename__ = "voice_utterances"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True, nullable=False
+    )
+    source: Mapped[str] = mapped_column(String(16), default="http", nullable=False)  # ws|http|tool
+    audio_format: Mapped[str] = mapped_column(String(16), default="wav", nullable=False)
+    sample_rate: Mapped[int] = mapped_column(Integer, default=16_000, nullable=False)
+    audio_seconds: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+
+    language: Mapped[str] = mapped_column(String(16), default="auto", nullable=False)
+    detected_language: Mapped[str | None] = mapped_column(String(16))
+    asr_provider: Mapped[str | None] = mapped_column(String(32))
+    transcript: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    confidence: Mapped[float | None] = mapped_column(Float)
+
+    assistant_provider: Mapped[str | None] = mapped_column(String(32))
+    assistant_reply: Mapped[str | None] = mapped_column(Text)
+    assistant_action: Mapped[str | None] = mapped_column(String(32))
+    assistant_data_json: Mapped[str | None] = mapped_column(Text)
+
+    processing_ms: Mapped[int | None] = mapped_column(Integer)
+    audio_path: Mapped[str | None] = mapped_column(String(1024))

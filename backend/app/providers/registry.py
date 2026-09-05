@@ -9,6 +9,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from app.core.config import settings
+from app.providers.assistant import AssistantProvider, MockAssistantProvider
 from app.providers.base import (
     ASRProvider,
     DiarizationProvider,
@@ -80,6 +81,20 @@ def get_diarization_provider() -> DiarizationProvider | None:
 
 
 @lru_cache
+def get_assistant_provider() -> AssistantProvider:
+    name = settings.assistant_provider
+    if name == "mock":
+        return MockAssistantProvider()
+    # Reserved hooks (ADR 0004): the LLM choice is deferred, but selecting one
+    # must fail loudly rather than silently falling back to the mock.
+    raise ProviderUnavailable(
+        f"Assistant provider {name!r} is reserved but not implemented yet. "
+        "Use ECHONEURA_ASSISTANT_PROVIDER=mock, or implement the adapter in "
+        "app/providers/assistant.py (see docs/adr/0004-assistant-hook.md)."
+    )
+
+
+@lru_cache
 def get_enrichment_provider() -> EnrichmentProvider:
     name = settings.enrich_provider
     if name == "mock":
@@ -95,7 +110,9 @@ def provider_summary() -> dict[str, str]:
     asr = get_asr_provider()
     diar = get_diarization_provider()
     enrich = get_enrichment_provider()
+    assistant = get_assistant_provider()
     return {
+        "assistant": assistant.name,
         "asr": asr.name,
         "asr_supports_diarization": str(asr.supports_diarization).lower(),
         "diarization": diar.name if diar else "bundled-with-asr",
@@ -106,6 +123,7 @@ def provider_summary() -> dict[str, str]:
 __all__ = [
     "NullDiarizationProvider",
     "get_asr_provider",
+    "get_assistant_provider",
     "get_diarization_provider",
     "get_enrichment_provider",
     "provider_summary",

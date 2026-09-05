@@ -64,6 +64,35 @@ Acceptance criteria (all verified by tests and by hand against the live app):
 no chunking of files beyond vendor size limits (Groq 100 MB → clear error
 suggesting AssemblyAI/Deepgram).
 
+## M1.5 — Live voice ingest + assistant bridge ✅ (2026-09-05)
+
+User-requested detour between M1 and M2: **talk to the product** — from the
+browser (`/voice`, hold-to-talk), a rooted Amazon Echo Dot 2nd Gen (RS03QR), or
+any WebSocket client — and get transcript + assistant action back.
+
+Shipped:
+- `WS /api/voice/stream` — protocol v1 (binary PCM frames in, JSON
+  result/discarded/error out; many utterances per session). Spec:
+  `docs/device/voice-protocol.md`.
+- `POST /api/voice/utterance` one-shot upload + `GET/DELETE /api/voice/utterances`.
+- `AssistantProvider` interface + deterministic `MockAssistantProvider`
+  (`reply`/`action`/`data`); `ECHONEURA_ASSISTANT_PROVIDER` registry slot with
+  `openai`/`anthropic` reserved — see ADR 0004.
+- `voice_utterances` table (own lifecycle, deliberately not batch jobs).
+- Frontend `/voice`: AudioWorklet mic → Int16 PCM → WS, hold-to-talk, result +
+  history panels; WS URL candidates (env override → same-origin proxy →
+  sandbox-derived backend host).
+- `tools/stream_audio_to_voice.py` — CLI reference client (also the template
+  for the Dot/Pi satellite).
+- Device runbook: `docs/device/echo-dot-rs03qr-jailbreak.md` (amonet
+  biscuit unlock, TWRP, Fire OS 5 + f1r30s, unbrick, satellite options,
+  honest cost/benefit).
+- 26 new tests (service guards, HTTP, full WS protocol incl. overflow/discard/
+  cancel); `pytest-timeout` added so protocol deadlocks fail fast.
+
+Deferred to post-M1.5: real LLM assistant provider, wake-word/VAD, TTS reply
+playback, on-device client for the Dot.
+
 ## M2 — AI enrichment ⬜ (next)
 
 Summary, key points, pull-quote extraction. Schema fields (`summary`,

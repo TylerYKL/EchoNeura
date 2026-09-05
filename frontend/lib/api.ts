@@ -143,3 +143,28 @@ export const api = {
 
   audioUrl: (jobId: string) => `/api/jobs/${jobId}/audio`,
 };
+
+// --- Live voice -------------------------------------------------------------
+
+export const voiceApi = {
+  history: (limit = 20) =>
+    fetch(`/api/voice/utterances?limit=${limit}`, { cache: "no-store" }).then(async (r) => {
+      if (!r.ok) await parseErrorShim(r);
+      return (await r.json()) as import("./types").VoiceHistory;
+    }),
+  remove: (id: string) =>
+    fetch(`/api/voice/utterances/${id}`, { method: "DELETE" }).then(async (r) => {
+      if (!r.ok) await parseErrorShim(r);
+    }),
+};
+
+async function parseErrorShim(response: Response): Promise<never> {
+  let detail = `${response.status} ${response.statusText}`;
+  try {
+    const body = await response.json();
+    if (typeof body?.detail === "string") detail = body.detail;
+  } catch {
+    /* keep status text */
+  }
+  throw new ApiError(response.status, detail);
+}
