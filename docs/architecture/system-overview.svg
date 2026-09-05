@@ -1,0 +1,234 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060" font-family="Inter, system-ui, -apple-system, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b6478"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a78bfa"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="1060" fill="#0b0d12"/>
+
+  <!-- Title -->
+  <text x="30" y="38" font-size="21" font-weight="700" fill="#e6e9f0">EchoNeura — how the system processes audio today</text>
+  <text x="30" y="60" font-size="12" fill="#8b93a7">M1 batch pipeline + M1.5 live-voice ingest · mock providers by default, env-swappable · branch arena/01a06f6a-echoneura @ b374947</text>
+
+  <!-- ======================= BATCH LANE ======================= -->
+  <rect x="30" y="80" width="1170" height="390" rx="14" fill="#0f131c" stroke="#1c2230"/>
+  <rect x="50" y="96" width="392" height="26" rx="13" fill="#17253b"/>
+  <text x="64" y="114" font-size="12.5" font-weight="700" fill="#60a5fa">① BATCH (M1) — upload → transcript → export</text>
+
+  <!-- B1 Browser -->
+  <rect x="50" y="140" width="200" height="76" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="66" y="163" font-size="13" font-weight="700" fill="#e6e9f0">Browser — Studio UI</text>
+  <text x="66" y="181" font-size="11" fill="#8b93a7">Next.js App Router  ·  page /</text>
+  <text x="66" y="197" font-size="11" fill="#8b93a7">upload · poll · edit · export</text>
+
+  <!-- B2 Next proxy -->
+  <rect x="310" y="140" width="200" height="76" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="326" y="163" font-size="13" font-weight="700" fill="#e6e9f0">Next.js 16 server</text>
+  <text x="326" y="181" font-size="11" fill="#8b93a7">rewrites proxy  /api/* → :8000</text>
+  <text x="326" y="197" font-size="11" fill="#8b93a7">carries HTTP and WS upgrades</text>
+
+  <!-- B3 jobs API -->
+  <rect x="570" y="140" width="230" height="76" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="586" y="163" font-size="13" font-weight="700" fill="#e6e9f0">FastAPI — jobs API</text>
+  <text x="586" y="181" font-size="11" fill="#8b93a7">POST /api/jobs · streamed to disk</text>
+  <text x="586" y="197" font-size="11" fill="#8b93a7">size cap 500 MB · sanitized names</text>
+
+  <!-- B4 SQLite enqueue -->
+  <rect x="860" y="140" width="280" height="76" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="876" y="163" font-size="13" font-weight="700" fill="#e6e9f0">SQLite — job row  queued</text>
+  <text x="876" y="181" font-size="11" fill="#8b93a7">audio → data/uploads/{job_id}/</text>
+  <text x="876" y="197" font-size="11" fill="#8b93a7">no broker: DB is the queue</text>
+
+  <line x1="250" y1="178" x2="306" y2="178" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="510" y1="178" x2="566" y2="178" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="800" y1="178" x2="856" y2="178" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="256" y="170" font-size="10.5" fill="#9aa3b5">multipart</text>
+
+  <!-- Worker -->
+  <rect x="310" y="270" width="830" height="112" rx="10" fill="#131826" stroke="#2e3563"/>
+  <text x="326" y="293" font-size="13" font-weight="700" fill="#a5b4fc">Worker — DB-backed queue (in-process or standalone)</text>
+  <text x="326" y="309" font-size="10.5" fill="#8b93a7">atomic claim with lease · crash-safe · state machine queued → … → completed / failed</text>
+
+  <rect x="326" y="322" width="146" height="44" rx="8" fill="#161a24" stroke="#2a3242"/>
+  <text x="338" y="340" font-size="11" font-weight="600" fill="#e6e9f0">preprocess</text>
+  <text x="338" y="356" font-size="10" fill="#8b93a7">ffmpeg probe / convert</text>
+
+  <rect x="488" y="322" width="146" height="44" rx="8" fill="#161a24" stroke="#2a3242"/>
+  <text x="500" y="340" font-size="11" font-weight="600" fill="#e6e9f0">transcribe</text>
+  <text x="500" y="356" font-size="10" fill="#8b93a7">ASR provider ↓</text>
+
+  <rect x="650" y="322" width="146" height="44" rx="8" fill="#161a24" stroke="#2a3242"/>
+  <text x="662" y="340" font-size="11" font-weight="600" fill="#e6e9f0">diarize</text>
+  <text x="662" y="356" font-size="10" fill="#8b93a7">who speaks when</text>
+
+  <rect x="812" y="322" width="146" height="44" rx="8" fill="#161a24" stroke="#2a3242"/>
+  <text x="824" y="340" font-size="11" font-weight="600" fill="#e6e9f0">merge speakers</text>
+  <text x="824" y="356" font-size="10" fill="#8b93a7">overlap voting · UNKNOWN</text>
+
+  <rect x="974" y="322" width="146" height="44" rx="8" fill="#161a24" stroke="#2a3242"/>
+  <text x="986" y="340" font-size="11" font-weight="600" fill="#e6e9f0">persist</text>
+  <text x="986" y="356" font-size="10" fill="#8b93a7">segments + speakers</text>
+
+  <line x1="472" y1="344" x2="486" y2="344" stroke="#5b6478" stroke-width="1.4" marker-end="url(#arr)"/>
+  <line x1="634" y1="344" x2="648" y2="344" stroke="#5b6478" stroke-width="1.4" marker-end="url(#arr)"/>
+  <line x1="796" y1="344" x2="810" y2="344" stroke="#5b6478" stroke-width="1.4" marker-end="url(#arr)"/>
+  <line x1="958" y1="344" x2="972" y2="344" stroke="#5b6478" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- B5 transcript UI -->
+  <rect x="50" y="270" width="200" height="112" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="66" y="293" font-size="13" font-weight="700" fill="#e6e9f0">Transcript UI</text>
+  <text x="66" y="311" font-size="11" fill="#8b93a7">/jobs/[id] · poll progress</text>
+  <text x="66" y="327" font-size="11" fill="#8b93a7">inline edits (provenance)</text>
+  <text x="66" y="343" font-size="11" fill="#8b93a7">speaker rename</text>
+  <text x="66" y="359" font-size="11" fill="#8b93a7">SRT · VTT · TXT · MD · JSON</text>
+
+  <line x1="1000" y1="216" x2="1000" y2="266" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="1010" y="246" font-size="10.5" fill="#9aa3b5">claim (lease)</text>
+  <line x1="306" y1="326" x2="254" y2="326" stroke="#60a5fa" stroke-width="1.6" marker-end="url(#arrB)"/>
+  <text x="254" y="318" font-size="10.5" fill="#9aa3b5">segments</text>
+  <line x1="150" y1="266" x2="150" y2="220" stroke="#60a5fa" stroke-width="1.6" marker-end="url(#arrB)"/>
+  <text x="158" y="248" font-size="10.5" fill="#9aa3b5">poll job</text>
+
+  <!-- ======================= LIVE VOICE LANE ======================= -->
+  <rect x="30" y="500" width="1170" height="430" rx="14" fill="#0f131c" stroke="#1c2230"/>
+  <rect x="50" y="516" width="450" height="26" rx="13" fill="#12251c"/>
+  <text x="64" y="534" font-size="12.5" font-weight="700" fill="#34d399">② LIVE VOICE (M1.5) — stream → transcript → action</text>
+
+  <!-- Clients -->
+  <rect x="50" y="560" width="210" height="64" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="66" y="583" font-size="12.5" font-weight="700" fill="#e6e9f0">Browser  /voice</text>
+  <text x="66" y="601" font-size="10.5" fill="#8b93a7">AudioWorklet: Float32 → Int16</text>
+  <text x="66" y="616" font-size="10.5" fill="#8b93a7">hold-to-talk</text>
+
+  <rect x="50" y="638" width="210" height="64" rx="10" fill="#161a24" stroke="#2a3242" stroke-dasharray="5 4"/>
+  <text x="66" y="661" font-size="12.5" font-weight="700" fill="#e6e9f0">Echo Dot RS03QR</text>
+  <text x="66" y="679" font-size="10.5" fill="#8b93a7">rooted (amonet) — runbook ready</text>
+  <text x="66" y="694" font-size="10.5" fill="#8b93a7">satellite client: future work</text>
+
+  <rect x="50" y="716" width="210" height="64" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="66" y="739" font-size="12.5" font-weight="700" fill="#e6e9f0">CLI / Raspberry Pi</text>
+  <text x="66" y="757" font-size="10.5" fill="#8b93a7">tools/stream_audio_to_voice.py</text>
+  <text x="66" y="772" font-size="10.5" fill="#8b93a7">reference client</text>
+
+  <!-- W1 WS endpoint -->
+  <rect x="330" y="600" width="220" height="140" rx="10" fill="#131826" stroke="#1d4436"/>
+  <text x="346" y="624" font-size="12.5" font-weight="700" fill="#6ee7b7">WS /api/voice/stream</text>
+  <text x="346" y="642" font-size="10.5" fill="#8b93a7">protocol v1 · session = many</text>
+  <text x="346" y="657" font-size="10.5" fill="#8b93a7">utterances</text>
+  <text x="346" y="678" font-size="10.5" fill="#8b93a7">← ready · result · pong</text>
+  <text x="346" y="693" font-size="10.5" fill="#8b93a7">← discarded · error{fatal}</text>
+  <text x="346" y="714" font-size="10.5" fill="#8b93a7">→ binary PCM · stop/cancel/ping</text>
+
+  <!-- W2 voice service -->
+  <rect x="600" y="600" width="210" height="140" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="616" y="624" font-size="12.5" font-weight="700" fill="#e6e9f0">voice service</text>
+  <text x="616" y="642" font-size="10.5" fill="#8b93a7">guards: 0.4 s min · 300 s max</text>
+  <text x="616" y="657" font-size="10.5" fill="#8b93a7">PCM → WAV wrap (stdlib)</text>
+  <text x="616" y="678" font-size="10.5" fill="#8b93a7">ASR runs in threadpool</text>
+  <text x="616" y="693" font-size="10.5" fill="#8b93a7">HTTP one-shot POST</text>
+  <text x="616" y="708" font-size="10.5" fill="#8b93a7">/api/voice/utterance shares it</text>
+
+  <!-- W3 ASR -->
+  <rect x="860" y="560" width="280" height="84" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="876" y="584" font-size="12.5" font-weight="700" fill="#e6e9f0">ASR provider — shared with batch</text>
+  <text x="876" y="602" font-size="10.5" fill="#8b93a7">mock today → faster_whisper / groq /</text>
+  <text x="876" y="617" font-size="10.5" fill="#8b93a7">assemblyai / deepgram with one env var</text>
+  <text x="876" y="634" font-size="10.5" fill="#6ee7b7">transcript + confidence + language</text>
+
+  <!-- W4 assistant -->
+  <rect x="860" y="664" width="280" height="84" rx="10" fill="#141733" stroke="#2e3563"/>
+  <text x="876" y="688" font-size="12.5" font-weight="700" fill="#a5b4fc">Assistant bridge (ADR 0004)</text>
+  <text x="876" y="706" font-size="10.5" fill="#8b93a7">mock: rules → reply + action + data</text>
+  <text x="876" y="721" font-size="10.5" fill="#8b93a7">actions: speak · navigate · none</text>
+  <text x="876" y="738" font-size="10.5" fill="#8b93a7">openai / anthropic slots reserved*</text>
+
+  <!-- W5 storage row -->
+  <rect x="330" y="800" width="540" height="76" rx="10" fill="#161a24" stroke="#2a3242"/>
+  <text x="346" y="824" font-size="12.5" font-weight="700" fill="#e6e9f0">voice_utterances row  +  WAV → data/voice/YYYY/MM/DD/</text>
+  <text x="346" y="842" font-size="10.5" fill="#8b93a7">history: GET /api/voice/utterances · DELETE removes row + audio</text>
+  <text x="346" y="858" font-size="10.5" fill="#8b93a7">not batch jobs — own table, own lifecycle (ADR 0004 §5)</text>
+
+  <!-- client arrows -->
+  <path d="M 260 592 C 296 596, 300 620, 326 634" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <line x1="260" y1="670" x2="326" y2="670" stroke="#34d399" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <path d="M 260 748 C 296 744, 300 720, 326 706" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <text x="264" y="660" font-size="10.5" fill="#9aa3b5">16 kHz</text>
+
+  <!-- result back -->
+  <path d="M 440 596 C 440 556, 320 552, 268 574" fill="none" stroke="#34d399" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrG)"/>
+  <text x="470" y="552" font-size="10.5" fill="#9aa3b5">result {transcript, assistant, ms} → same socket</text>
+
+  <line x1="550" y1="670" x2="596" y2="670" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="554" y="662" font-size="10.5" fill="#9aa3b5">stop →</text>
+  <path d="M 810 646 C 832 636, 836 618, 856 606" fill="none" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="812" y="614" font-size="10.5" fill="#9aa3b5">audio</text>
+  <line x1="1000" y1="644" x2="1000" y2="660" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="1010" y="657" font-size="10.5" fill="#9aa3b5">transcript</text>
+  <path d="M 990 748 C 960 790, 920 810, 876 826" fill="none" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="952" y="792" font-size="10.5" fill="#9aa3b5">persist</text>
+  <line x1="700" y1="740" x2="700" y2="796" stroke="#5b6478" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="708" y="774" font-size="10.5" fill="#9aa3b5">save WAV</text>
+
+  <!-- ======================= SHARED CORE ======================= -->
+  <rect x="1230" y="80" width="340" height="850" rx="14" fill="#12101d" stroke="#2a2440"/>
+  <rect x="1250" y="96" width="150" height="26" rx="13" fill="#241d3d"/>
+  <text x="1264" y="114" font-size="12.5" font-weight="700" fill="#a78bfa">SHARED CORE</text>
+
+  <rect x="1250" y="140" width="300" height="238" rx="10" fill="#161a24" stroke="#3a3358"/>
+  <text x="1266" y="164" font-size="12.5" font-weight="700" fill="#e6e9f0">Provider registry (ADR 0003 / 0004)</text>
+  <text x="1266" y="188" font-size="10.5" fill="#8b93a7" font-family="ui-monospace, monospace">ECHONEURA_ASR_PROVIDER</text>
+  <text x="1266" y="203" font-size="10.5" fill="#6b7385">mock · faster_whisper · assemblyai · deepgram · groq</text>
+  <text x="1266" y="226" font-size="10.5" fill="#8b93a7" font-family="ui-monospace, monospace">ECHONEURA_DIARIZATION_PROVIDER</text>
+  <text x="1266" y="241" font-size="10.5" fill="#6b7385">none · mock · pyannote</text>
+  <text x="1266" y="264" font-size="10.5" fill="#8b93a7" font-family="ui-monospace, monospace">ECHONEURA_ENRICH_PROVIDER</text>
+  <text x="1266" y="279" font-size="10.5" fill="#6b7385">mock · openai · anthropic   (M2: summary + quotes)</text>
+  <text x="1266" y="302" font-size="10.5" fill="#8b93a7" font-family="ui-monospace, monospace">ECHONEURA_ASSISTANT_PROVIDER</text>
+  <text x="1266" y="317" font-size="10.5" fill="#6b7385">mock · openai* · anthropic*   (* reserved, fail loud)</text>
+  <text x="1266" y="345" font-size="10.5" fill="#a78bfa">ProviderError = retry · ProviderUnavailable = fail fast</text>
+  <text x="1266" y="362" font-size="10.5" fill="#6b7385">keys validated at startup · health reports readiness</text>
+
+  <rect x="1250" y="400" width="300" height="130" rx="10" fill="#161a24" stroke="#3a3358"/>
+  <text x="1266" y="424" font-size="12.5" font-weight="700" fill="#e6e9f0">Storage</text>
+  <text x="1266" y="446" font-size="10.5" fill="#8b93a7">SQLite: jobs · segments · speakers ·</text>
+  <text x="1266" y="461" font-size="10.5" fill="#8b93a7">transcripts · voice_utterances</text>
+  <text x="1266" y="482" font-size="10.5" fill="#8b93a7">data/uploads/{job}/ · data/voice/date/</text>
+  <text x="1266" y="503" font-size="10.5" fill="#6b7385">media + DB gitignored · deletable via API</text>
+
+  <rect x="1250" y="552" width="300" height="118" rx="10" fill="#161a24" stroke="#3a3358"/>
+  <text x="1266" y="576" font-size="12.5" font-weight="700" fill="#e6e9f0">One ASR stack, two paths</text>
+  <text x="1266" y="598" font-size="10.5" fill="#8b93a7">batch worker and voice service call the</text>
+  <text x="1266" y="613" font-size="10.5" fill="#8b93a7">same provider registry — swap mock →</text>
+  <text x="1266" y="628" font-size="10.5" fill="#8b93a7">whisper/cloud once, both lanes benefit.</text>
+  <text x="1266" y="650" font-size="10.5" fill="#6b7385">voice has no jobs/queue: interactive, seconds-long</text>
+
+  <rect x="1250" y="692" width="300" height="216" rx="10" fill="#161a24" stroke="#3a3358"/>
+  <text x="1266" y="716" font-size="12.5" font-weight="700" fill="#e6e9f0">Status &amp; docs</text>
+  <text x="1266" y="738" font-size="10.5" fill="#8b93a7">✓ 218 tests · lint + tsc clean</text>
+  <text x="1266" y="753" font-size="10.5" fill="#8b93a7">✓ WS verified direct :8000 and via Next proxy</text>
+  <text x="1266" y="768" font-size="10.5" fill="#8b93a7">✓ live preview: /voice hold-to-talk works</text>
+  <text x="1266" y="792" font-size="10.5" fill="#6b7385">docs/device/echo-dot-rs03qr-jailbreak.md</text>
+  <text x="1266" y="807" font-size="10.5" fill="#6b7385">docs/device/voice-protocol.md (WS spec v1)</text>
+  <text x="1266" y="822" font-size="10.5" fill="#6b7385">docs/adr/0001–0004</text>
+  <text x="1266" y="846" font-size="10.5" fill="#8b93a7">next: real assistant LLM (ADR 0004) ·</text>
+  <text x="1266" y="861" font-size="10.5" fill="#8b93a7">Dot/Pi satellite client · wake word / VAD ·</text>
+  <text x="1266" y="876" font-size="10.5" fill="#8b93a7">TTS replies · then M2 summaries</text>
+
+  <line x1="1200" y1="250" x2="1246" y2="230" stroke="#a78bfa" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arrP)"/>
+  <text x="1180" y="222" font-size="10.5" fill="#9aa3b5">uses</text>
+  <line x1="1200" y1="660" x2="1246" y2="620" stroke="#a78bfa" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arrP)"/>
+  <text x="1180" y="652" font-size="10.5" fill="#9aa3b5">uses</text>
+
+  <!-- Footer -->
+  <text x="30" y="965" font-size="11" fill="#5f6779">Solid arrows = request/data flow · dashed green = response back to client · dashed purple = shared dependency. Both lanes run today with zero API keys (mock providers).</text>
+  <text x="30" y="985" font-size="11" fill="#5f6779">Echo Dot lane: device runbook complete (biscuit/amonet unlock → Fire OS 5 + f1r30s → ADB); the on-device streaming client itself is the remaining future work.</text>
+</svg>
