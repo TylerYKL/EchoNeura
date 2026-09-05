@@ -1,0 +1,27 @@
+# --- Core API ---
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+pydantic>=2.7
+pydantic-settings>=2.3
+
+# --- Persistence ---
+SQLAlchemy>=2.0.30
+# SQLite ships with Python; for Postgres (staging/prod) uncomment:
+# psycopg[binary]>=3.1
+
+# --- HTTP client for provider adapters ---
+httpx>=0.27
+
+# --- Audio tooling (static ffmpeg binary; no apt/root needed) ---
+imageio-ffmpeg>=0.4.9
+
+# --- Testing ---
+pytest>=8.2
+pytest-asyncio>=0.23
+
+# --- Optional, enabled by env vars only. NOT installed by default because they
+#     pull ~2GB of torch and cannot run on a CPU-only 3GB box.
+# faster-whisper>=1.0        # ECHONEURA_ASR_PROVIDER=faster_whisper
+# torch>=2.2                 # required by pyannote
+# pyannote.audio>=3.1        # ECHONEURA_DIARIZATION_PROVIDER=pyannote

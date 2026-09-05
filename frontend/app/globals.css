@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #07070a;
+  --color-ink-900: #0b0c10;
+  --color-ink-850: #101219;
+  --color-ink-800: #151823;
+  --color-ink-700: #1e2230;
+  --color-line: #262b3b;
+  --color-line-soft: #1c2130;
+  --color-mute: #8b93a7;
+  --color-accent: #6366f1;
+  --color-accent-soft: #818cf8;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: #e7e9f0;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-accent) 45%, transparent);
+  }
+
+  /* Slim, unobtrusive scrollbars — transcript panels scroll a lot. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-line);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-soft);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    border-radius: 14px;
+    border: 1px solid var(--color-line-soft);
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-ink-850) 92%, white 8%) 0%,
+      var(--color-ink-900) 100%
+    );
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-ink-800);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e7e9f0;
+    transition: background-color 120ms ease, border-color 120ms ease, opacity 120ms ease;
+    cursor: pointer;
+  }
+
+  .btn:hover:not(:disabled) {
+    background-color: var(--color-ink-700);
+    border-color: #343b50;
+  }
+
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    border-color: transparent;
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-accent-soft);
+    border-color: transparent;
+  }
+
+  .btn-sm {
+    padding: 0.28rem 0.6rem;
+    font-size: 0.78rem;
+    border-radius: 8px;
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--color-mute);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background-color: var(--color-ink-800);
+    color: #e7e9f0;
+  }
+
+  .input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-ink-900);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #e7e9f0;
+  }
+
+  .input:focus {
+    border-color: var(--color-accent);
+    outline: none;
+  }
+
+  .label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    margin-bottom: 0.4rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line);
+    background-color: var(--color-ink-850);
+    padding: 0.15rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--color-mute);
+  }
+}
+
+@keyframes echoneura-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-pulse-soft {
+  animation: echoneura-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes echoneura-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: echoneura-rise 220ms ease-out both;
+}

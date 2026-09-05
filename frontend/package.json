@@ -1,0 +1,26 @@
+{
+  "name": "echoneura-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EchoNeura \u2014 AI Audio Content Studio (M1 web UI)",
+  "scripts": {
+    "dev": "next dev --webpack -H 0.0.0.0 -p ${PORT:-3000}",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "19.1.2",
+    "react-dom": "19.1.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.7.0"
+  }
+}

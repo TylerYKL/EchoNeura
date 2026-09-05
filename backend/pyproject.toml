@@ -1,0 +1,41 @@
+[project]
+name = "echoneura-backend"
+version = "0.1.0"
+description = "EchoNeura — AI Audio Content Studio backend (M1: upload -> transcribe -> diarize -> edit -> export)"
+requires-python = ">=3.11"
+readme = "../README.md"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [".venv", "data"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # bugbear (common bugs)
+  "UP",  # pyupgrade
+  "C4",  # comprehensions
+  "SIM", # simplify
+  "BLE", # no blind except
+  "RUF", # ruff-specific
+]
+ignore = [
+  "E501",  # line length is handled by the formatter
+  "B008",  # FastAPI Depends() in default args is the documented pattern
+  "SIM108",# ternary is not always clearer
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
