@@ -18,6 +18,7 @@ community exploit targets.
 | amonet exploit source (`mt8163-biscuit` branch, actively developed) | https://github.com/R0rt1z2/amonet/tree/mt8163-biscuit |
 | TWRP device tree | https://github.com/R0rt1z2/twrp_device_amazon_biscuit |
 | Earlier tethered-root PoC on 2nd-gen Echos (mic-audio exfil demo, Daniel B) | https://danieldb.uk/posts/alexa-2/ and https://www.hackster.io/news/this-tethered-root-lets-you-run-your-own-code-on-amazon-s-second-gen-echo-devices-32fc9cab77c9 |
+| **This repo's toolkit** (fetcher, preflight, guided unlock, satellite client) | `tools/dot/` — see below |
 | Original amonet exploit (xyz`, karnak) & first biscuit port (k4y0z) | credited in the XDA thread |
 
 Current release at time of writing: **amonet-biscuit-v1.1.0** (2026-03-20) —
@@ -74,6 +75,31 @@ Entering modes (device unplugged → plug in while…):
   sudo systemctl disable ModemManager
   ```
 - Patience, and a device you've accepted you might lose.
+
+## Toolkit: this repo runs the guide with you
+
+`tools/dot/` turns the steps below into five commands with safety gates
+(each gate waits for you to confirm the physical LED state; quitting is always
+safe and prints where you stand):
+
+```bash
+cd tools/dot
+./preflight.sh                            # host, cable, ModemManager, firmware version
+./fetch-amonet.sh                         # verified download + extract of v1.1.0 (+f1r30s)
+./root-assistant.sh ./amonet-dist/amonet  # brick → bootrom → fastboot → TWRP → flash, gated
+./post-root.sh --host <ip-of-echoneura>   # push + smoke-test the satellite on the Dot
+adb shell /data/local/tmp/satellite --host <ip> --port 8000   # the live mic loop
+```
+
+Verified direct links (checked 2026-09-05; if XDA reshuffles attachments the
+scripts fall back to telling you exactly where to click):
+
+| File | URL |
+|---|---|
+| amonet-biscuit-v1.1.0.zip (18.3 MB) | https://xdaforums.com/attachments/amonet-biscuit-v1-1-0-zip.6331296/ (alt .6327883) |
+| f1r30s.zip (403 KB) | thread Attachments section (script probes id 6273805, verifies size+ZIP magic) |
+| Fire OS 5.5.3.1 stock FW | https://d1s31zyz7dcc2d.cloudfront.net/8811a0fc982bf3331dc54f5aec45d936/update-kindle-full_biscuit-272.6.4.1_user_641575220.bin |
+| Fire OS 5.5.5.4 stock FW | https://d1s31zyz7dcc2d.cloudfront.net/47a1457e0802980eb32f63cd3ce355c0/update-kindle-csm_biscuit-272.6.8.0_user_680767620.bin |
 
 ## Step-by-step (from the XDA thread, v1.1.0)
 
@@ -149,17 +175,14 @@ device with 256 MB RAM**, ADB, and UART. Amazon's Alexa stack still owns the
 mic DSP path by default, and the hardware is far too weak for on-device ASR.
 The practical integration, in order of sanity:
 
-1. **Stream audio out, think on the server (recommended).** Run a small client
-   on the Dot that captures audio and streams PCM to EchoNeura's voice
-   WebSocket; EchoNeura does ASR + assistant + replies. Two ways to run it:
-   - **Sideloaded APK** (cleanest): a minimal Android app with
-     `RECORD_AUDIO`, an always-on foreground service, and a WebSocket client
-     speaking our protocol (§ below). Android 5.1-compatible builds only
-     (target SDK ≤ 25 era toolchains; current Termux no longer supports
-     Android 5).
-   - **Native via ADB shell**: `tinycap`/`tinyalsa` are present on Fire OS;
-     a shell script loop can `tinycap` chunks and pipe them through a small
-     static binary or busybox `nc`-style client. Crude but dependency-free.
+1. **Stream audio out, think on the server (recommended — and already built).**
+   `tools/dot/satellite/` is a single **static ARMv7 musl binary** (~1.6 MB,
+   vendored tinyalsa for ALSA capture + minimal RFC 6455 client) that streams
+   mono S16LE PCM to `/api/voice/stream` and prints the transcript + assistant
+   reply coming back. `make cross` builds it with zig (or the musl.cc gcc);
+   `post-root.sh` pushes and smoke-tests it. No APK, no Termux, no dependencies
+   on Android 5.1's libc. (A sideloaded APK remains the polished future option
+   if you later want wake-word + foreground-service behaviour.)
    - Mic-sharing caveat: if the stock Alexa service still runs, it may hold the
      mic array. Options: disable Alexa (`pm disable-user` on the Alexa
      packages via root), or use the DSP's secondary capture path — test with

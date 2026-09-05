@@ -50,3 +50,9 @@ data/*.sqlite3
 
 # --- Runtime logs ---
 logs/
+
+# Dot satellite build artifacts / cross toolchain
+/tools/dot/satellite/.cache/
+/tools/dot/satellite/satellite
+/tools/dot/satellite/satellite-arm
+/tools/dot/amonet-dist/
